@@ -59,6 +59,9 @@ async function handler(event, context) {
     } else if(size === "medium") {
       w = 600;
       h = 600;
+    } else if(size === "large") {
+      w = 1024;
+      h = 1024;
     }
   } else if(parseFloat(aspectratio) === 0.5625) {
     if(!size || size === "small") {
@@ -67,6 +70,9 @@ async function handler(event, context) {
     } else if(size === "medium") {
       w = 338;
       h = 600;
+    } else if(size === "large") {
+      w = 576;
+      h = 1024;
     }
   }
 
