@@ -1,0 +1,24 @@
+{
+  "name": "eleventy-api-screenshot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/11ty/api-screenshot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/11ty/api-screenshot/issues"
+  },
+  "homepage": "https://github.com/11ty/api-screenshot#readme",
+  "dependencies": {
+    "@netlify/functions": "^0.7.2",
+    "chrome-aws-lambda": "^10.1.0"
+  }
+}
