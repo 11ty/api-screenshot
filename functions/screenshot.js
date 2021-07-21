@@ -52,7 +52,7 @@ async function handler(event, context) {
   let w;
   let h;
 
-  if(!aspectratio || aspectratio === "square") {
+  if(!aspectratio || aspectratio === "square" || parseInt(aspectratio, 10) === 1) {
     if(!size || size === "small") {
       w = 420;
       h = 420;
@@ -60,7 +60,7 @@ async function handler(event, context) {
       w = 600;
       h = 600;
     }
-  } else if(aspectratio === "0.5625") {
+  } else if(parseFloat(aspectratio) === 0.5625) {
     if(!size || size === "small") {
       w = 236;
       h = 420;
