@@ -1,6 +1,6 @@
 const { builder } = require("@netlify/functions");
 const chromium = require("chrome-aws-lambda");
-const eleventyImage = require("@11ty/eleventy-img");
+const sharp = require("sharp");
 
 function isFullUrl(url) {
   try {
@@ -89,31 +89,14 @@ async function handler(event, context) {
     dims.height = viewport[1];
 
     let buffer = await screenshot(url, dims);
-
-    let metadata = await eleventyImage(url, {
-      formats: [format || "auto"],
-      widths: ["auto"],
-      dryRun: true,
-      cacheOptions: {
-        dryRun: true,
-      }
-    });
-
-    if(!format) {
-      format = Object.keys(metadata).pop();
-    }
-
-    let sources = metadata[format];
-    if(!Array.isArray(sources) || sources.length === 0) {
-      throw new Error(`Invalid \`format\`: ${format}`);
-    }
+    let sharpBuffer = sharp(buffer).toFormat(format).toBuffer();
 
     return {
       statusCode: 200,
       headers: {
-        "content-type": sources[0].sourceType
+        "content-type": `image/${format}`
       },
-      body: sources[0].buffer.toString('base64'),
+      body: sharpBuffer.toString('base64'),
       isBase64Encoded: true
     };
   } catch (error) {

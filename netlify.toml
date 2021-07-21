@@ -1,7 +1,5 @@
 [functions]
-directory = "functions"
-node_bundler = "esbuild"
-external_node_modules = ["chrome-aws-lambda"]
+directory = "functions"]
 
 [[redirects]]
 from = "/screenshot/*"
