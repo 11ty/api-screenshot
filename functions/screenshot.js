@@ -1,5 +1,6 @@
 const { builder } = require("@netlify/functions");
 const chromium = require("chrome-aws-lambda");
+const eleventyImage = require("@11ty/eleventy-img");
 
 function isFullUrl(url) {
   try {
@@ -45,10 +46,11 @@ async function handler(event, context) {
   //   /screenshot/:url/
   //   /screenshot/:url/:size/
   //   /screenshot/:url/:size/:aspectratio/
+  //   /screenshot/:url/:size/:aspectratio/:format/
 
   // e.g. /screenshot/1.0/https%3A%2F%2Fwww.11ty.dev%2F/square/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [, apiVersion, url, size, aspectratio] = pathSplit;
+  let [, apiVersion, url, size, aspectratio, format] = pathSplit;
   let viewport = [];
 
   if(!size || size === "small") {
@@ -88,12 +90,30 @@ async function handler(event, context) {
 
     let buffer = await screenshot(url, dims);
 
+    let metadata = await eleventyImage(url, {
+      formats: [format || "auto"],
+      widths: ["auto"],
+      dryRun: true,
+      cacheOptions: {
+        dryRun: true,
+      }
+    });
+
+    if(!format) {
+      format = Object.keys(metadata).pop();
+    }
+
+    let sources = metadata[format];
+    if(!Array.isArray(sources) || sources.length === 0) {
+      throw new Error(`Invalid \`format\`: ${format}`);
+    }
+
     return {
       statusCode: 200,
       headers: {
-        "content-type": "image/jpeg"
+        "content-type": sources[0].sourceType
       },
-      body: buffer.toString("base64"),
+      body: sources[0].buffer.toString('base64'),
       isBase64Encoded: true
     };
   } catch (error) {
