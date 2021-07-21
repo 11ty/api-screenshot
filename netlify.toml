@@ -1,5 +1,5 @@
 [functions]
-directory = "functions/"
+directory = "functions"
 
 [[redirects]]
 from = "/api/screenshot/:url/:viewport/"
