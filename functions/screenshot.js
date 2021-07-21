@@ -99,6 +99,9 @@ async function handler(event, context) {
 
     let output = await screenshot(url, format, dims);
 
+    //
+    console.log(url, format, dims, size, aspectratio);
+
     return {
       statusCode: 200,
       headers: {
