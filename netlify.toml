@@ -1,5 +1,6 @@
 [functions]
 directory = "functions"
+node_bundler = "esbuild"
 
 [[redirects]]
 from = "/screenshot/*"
