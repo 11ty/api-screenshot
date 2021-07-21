@@ -2,19 +2,19 @@
 directory = "functions"
 
 [[redirects]]
-from = "/screenshot/:url/"
+from = "/screenshot/1.0/:url/"
 to = "/.netlify/functions/screenshot"
 status = 200
 force = true
 
 [[redirects]]
-from = "/screenshot/:url/:aspectratio/"
+from = "/screenshot/1.0/:url/:aspectratio/"
 to = "/.netlify/functions/screenshot"
 status = 200
 force = true
 
 [[redirects]]
-from = "/screenshot/:url/:aspectratio/:size/"
+from = "/screenshot/1.0/:url/:aspectratio/:size/"
 to = "/.netlify/functions/screenshot"
 status = 200
 force = true
