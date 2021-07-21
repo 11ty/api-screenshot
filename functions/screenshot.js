@@ -27,7 +27,7 @@ async function screenshot(url, format, viewportSize, withJs = true) {
 
   await page.goto(url, {
     waitUntil: ["load", "networkidle0"],
-    timeout: 10
+    timeout: 10000
   });
 
   let options = {
