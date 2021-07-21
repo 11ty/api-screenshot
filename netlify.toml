@@ -1,0 +1,8 @@
+[functions]
+directory = "functions/"
+
+[[redirects]]
+from = "/api/screenshot/:url/:viewport/"
+to = "/.netlify/functions/screenshot"
+status = 200
+force = true
