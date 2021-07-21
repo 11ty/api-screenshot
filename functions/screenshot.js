@@ -58,6 +58,10 @@ async function handler(event, context) {
   let [, apiVersion, url, size, aspectratio, format] = pathSplit;
   let viewport = [];
 
+  if(!format) {
+    format = "jpeg";
+  }
+
   if(!size || size === "small") {
     if(!aspectratio || parseInt(aspectratio, 10) === 1) {
       viewport = [420, 420];
