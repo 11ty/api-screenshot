@@ -41,12 +41,34 @@ async function screenshot(url, viewportSize, withJs = true) {
 
 // Based on https://github.com/DavidWells/netlify-functions-workshop/blob/master/lessons-code-complete/use-cases/13-returning-dynamic-images/functions/return-image.js
 async function handler(event, context) {
-  // Links have the format /api/screenshot/:url/:viewport/
-  // Where :viewport are the viewport dimensions of the browser doing the screenshot
-  // e.g. /api/screenshot/https%3A%2F%2Fwww.11ty.dev%2F/420x580/
+  // Links have the formats:
+  //   /screenshot/:url/
+  //   /screenshot/:url/:aspectratio/
+  //   /screenshot/:url/:aspectratio/:size/
+
+  // e.g. /screenshot/https%3A%2F%2Fwww.11ty.dev%2F/square/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [,, url, viewport] = pathSplit;
-  let [w, h] = viewport.split("x");
+  let [, url, aspectratio, size] = pathSplit;
+  let w;
+  let h;
+
+  if(!aspectratio || aspectratio === "square") {
+    if(!size || size === "small") {
+      w = 420;
+      h = 420;
+    } else if(size === "medium") {
+      w = 600;
+      h = 600;
+    }
+  } else if(aspectratio === "0.5625") {
+    if(!size || size === "small") {
+      w = 236;
+      h = 420;
+    } else if(size === "medium") {
+      w = 338;
+      h = 600;
+    }
+  }
 
   url = decodeURIComponent(url);
 
@@ -56,8 +78,8 @@ async function handler(event, context) {
     }
 
     let dims = {};
-    dims.width = parseInt(w, 10) || 420;
-    dims.height = parseInt(h, 10) || 580;
+    dims.width = w;
+    dims.height = h;
 
     let buffer = await screenshot(url, dims);
 
@@ -70,6 +92,7 @@ async function handler(event, context) {
       isBase64Encoded: true
     };
   } catch (error) {
+    // TODO output sample error image instead of JSON
     console.log("Error", error);
 
     return {
