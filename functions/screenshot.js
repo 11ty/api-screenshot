@@ -43,36 +43,31 @@ async function screenshot(url, viewportSize, withJs = true) {
 async function handler(event, context) {
   // Links have the formats:
   //   /screenshot/:url/
-  //   /screenshot/:url/:aspectratio/
-  //   /screenshot/:url/:aspectratio/:size/
+  //   /screenshot/:url/:size/
+  //   /screenshot/:url/:size/:aspectratio/
 
   // e.g. /screenshot/https%3A%2F%2Fwww.11ty.dev%2F/square/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [, url, aspectratio, size] = pathSplit;
-  let w;
-  let h;
+  let [, url, size, aspectratio] = pathSplit;
+  let viewport = [];
 
-  if(!aspectratio || aspectratio === "square" || parseInt(aspectratio, 10) === 1) {
-    if(!size || size === "small") {
-      w = 420;
-      h = 420;
-    } else if(size === "medium") {
-      w = 600;
-      h = 600;
-    } else if(size === "large") {
-      w = 1024;
-      h = 1024;
+  if(!size || size === "small") {
+    if(!aspectratio || parseInt(aspectratio, 10) === 1) {
+      viewport = [420, 420];
+    } else if(parseFloat(aspectratio) === 0.5625) {
+      viewport = [236, 420];
     }
-  } else if(parseFloat(aspectratio) === 0.5625) {
-    if(!size || size === "small") {
-      w = 236;
-      h = 420;
-    } else if(size === "medium") {
-      w = 338;
-      h = 600;
-    } else if(size === "large") {
-      w = 576;
-      h = 1024;
+  } else if(size === "medium") {
+    if(!aspectratio || parseInt(aspectratio, 10) === 1) {
+      viewport = [600, 600];
+    } else if(parseFloat(aspectratio) === 0.5625) {
+      viewport = [338, 600];
+    }
+  } else if(size === "large") {
+    if(!aspectratio || parseInt(aspectratio, 10) === 1) {
+      viewport = [1024, 1024];
+    } else if(parseFloat(aspectratio) === 0.5625) {
+      viewport = [576, 1024];
     }
   }
 
@@ -83,9 +78,13 @@ async function handler(event, context) {
       throw new Error(`Invalid \`url\`: ${url}`);
     }
 
+    if(!viewport || viewport.length !== 2) {
+      throw new Error("Incorrect API usage. Expects one of: /screenshot/:url/ or /screenshot/:url/:size/ or /screenshot/:url/:size/:aspectratio/")
+    }
+
     let dims = {};
-    dims.width = w;
-    dims.height = h;
+    dims.width = viewport[0];
+    dims.height = viewport[1];
 
     let buffer = await screenshot(url, dims);
 
