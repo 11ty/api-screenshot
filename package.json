@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bundle": "zip-it-and-ship-it functions tmp"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,6 @@
   "dependencies": {
     "@netlify/functions": "^0.7.2",
     "chrome-aws-lambda": "^10.1.0",
-    "puppeteer-core": "^10.1.0",
-    "sharp": "^0.28.3"
+    "puppeteer-core": "^10.1.0"
   }
 }

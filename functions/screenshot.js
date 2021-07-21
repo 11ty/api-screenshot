@@ -1,6 +1,5 @@
 const { builder } = require("@netlify/functions");
 const chromium = require("chrome-aws-lambda");
-const sharp = require("sharp");
 
 function isFullUrl(url) {
   try {
@@ -12,7 +11,7 @@ function isFullUrl(url) {
   }
 }
 
-async function screenshot(url, viewportSize, withJs = true) {
+async function screenshot(url, format, viewportSize, withJs = true) {
   const browser = await chromium.puppeteer.launch({
     executablePath: await chromium.executablePath,
     args: chromium.args,
@@ -27,17 +26,23 @@ async function screenshot(url, viewportSize, withJs = true) {
   }
 
   await page.goto(url, {
-    waitUntil: ["load", "networkidle0"]
+    waitUntil: ["load"]
   });
 
-  let buffer = await page.screenshot({
-    type: "jpeg",
-    quality: 80,
-  });
+  let options = {
+    type: format,
+    encoding: "base64"
+  };
+
+  if(format === "jpeg") {
+    quality = 80;
+  }
+
+  let output = await page.screenshot(options);
 
   await browser.close();
 
-  return buffer;
+  return output;
 }
 
 // Based on https://github.com/DavidWells/netlify-functions-workshop/blob/master/lessons-code-complete/use-cases/13-returning-dynamic-images/functions/return-image.js
@@ -88,15 +93,14 @@ async function handler(event, context) {
     dims.width = viewport[0];
     dims.height = viewport[1];
 
-    let buffer = await screenshot(url, dims);
-    let sharpBuffer = sharp(buffer).toFormat(format).toBuffer();
+    let output = await screenshot(url, format, dims);
 
     return {
       statusCode: 200,
       headers: {
         "content-type": `image/${format}`
       },
-      body: sharpBuffer.toString('base64'),
+      body: output,
       isBase64Encoded: true
     };
   } catch (error) {
