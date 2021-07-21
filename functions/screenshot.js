@@ -52,11 +52,11 @@ async function handler(event, context) {
   //   /screenshot/:url/
   //   /screenshot/:url/:size/
   //   /screenshot/:url/:size/:aspectratio/
-  //   /screenshot/:url/:size/:aspectratio/:format/
 
   // e.g. /screenshot/1.0/https%3A%2F%2Fwww.11ty.dev%2F/square/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [, apiVersion, url, size, aspectratio, format] = pathSplit;
+  let [, apiVersion, url, size, aspectratio] = pathSplit;
+  let format = "jpeg"; // hardcoded for now
   let viewport = [];
 
   if(!format) {
@@ -100,7 +100,7 @@ async function handler(event, context) {
 
     let output = await screenshot(url, format, dims);
 
-    //
+    // output to Function logs
     console.log(url, format, dims, size, aspectratio);
 
     return {
