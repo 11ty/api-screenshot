@@ -46,9 +46,9 @@ async function handler(event, context) {
   //   /screenshot/:url/:size/
   //   /screenshot/:url/:size/:aspectratio/
 
-  // e.g. /screenshot/https%3A%2F%2Fwww.11ty.dev%2F/square/
+  // e.g. /screenshot/1.0/https%3A%2F%2Fwww.11ty.dev%2F/square/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [, url, size, aspectratio] = pathSplit;
+  let [, apiVersion, url, size, aspectratio] = pathSplit;
   let viewport = [];
 
   if(!size || size === "small") {
