@@ -52,6 +52,7 @@ async function handler(event, context) {
   //   /screenshot/:url/
   //   /screenshot/:url/:size/
   //   /screenshot/:url/:size/:aspectratio/
+  // Valid aspectratio values: 1, 0.5625
 
   // e.g. /screenshot/1.0/https%3A%2F%2Fwww.11ty.dev%2F/square/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
