@@ -82,6 +82,9 @@ async function handler(event, context) {
     } else if(parseFloat(aspectratio) === 0.5625) {
       viewport = [576, 1024];
     }
+  } else if(size === "opengraph") {
+    // ignores aspectratio
+    viewport = [1200, 630];
   }
 
   url = decodeURIComponent(url);
