@@ -11,11 +11,15 @@ function isFullUrl(url) {
   }
 }
 
-async function screenshot(url, format, viewportSize, withJs = true) {
+async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
   const browser = await chromium.puppeteer.launch({
     executablePath: await chromium.executablePath,
     args: chromium.args,
-    defaultViewport: viewportSize,
+    defaultViewport: {
+      width: viewportSize[0],
+      height: viewportSize[1],
+      deviceScaleFactor: parseFloat(dpr),
+    },
     headless: chromium.headless,
   });
 
@@ -25,8 +29,9 @@ async function screenshot(url, format, viewportSize, withJs = true) {
     page.setJavaScriptEnabled(false);
   }
 
+  // TODO is there a way to bail at timeout and still show what’s rendered on the page?
   await page.goto(url, {
-    waitUntil: ["load", "networkidle0"],
+    waitUntil: ["load"],
     timeout: 8500
   });
 
@@ -48,15 +53,9 @@ async function screenshot(url, format, viewportSize, withJs = true) {
 
 // Based on https://github.com/DavidWells/netlify-functions-workshop/blob/master/lessons-code-complete/use-cases/13-returning-dynamic-images/functions/return-image.js
 async function handler(event, context) {
-  // Links have the formats:
-  //   /:url/
-  //   /:url/:size/
-  //   /:url/:size/:aspectratio/
-  // Valid aspectratio values: 1, 0.5625
-
-  // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/square/
+  // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/small/1:1/smaller/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [url, size, aspectratio] = pathSplit;
+  let [url, size, aspectratio, zoom] = pathSplit;
   let format = "jpeg"; // hardcoded for now
   let viewport = [];
 
@@ -64,6 +63,13 @@ async function handler(event, context) {
   format = format || "jpeg";
   aspectratio = aspectratio || "1:1";
   size = size || "small";
+
+  let dpr = 1;
+  if(zoom === "bigger") {
+    dpr = 1.4;
+  } else if(zoom === "smaller") {
+    dpr = 0.71428571;
+  }
 
   if(size === "small") {
     if(aspectratio === "1:1") {
@@ -83,8 +89,9 @@ async function handler(event, context) {
       viewport = [1024, 1024];
     }
   } else if(size === "opengraph") {
-    // ignores aspectratio
-    viewport = [1200, 630];
+    // ignores aspectratio and zoom/dpr
+    viewport = [857, 450];
+    dpr = 1.4; // the math calculates to a 1200×630 final image
   }
 
   url = decodeURIComponent(url);
@@ -98,15 +105,10 @@ async function handler(event, context) {
       throw new Error("Incorrect API usage. Expects one of: /:url/ or /:url/:size/ or /:url/:size/:aspectratio/")
     }
 
-    let dims = {
-      width: viewport[0],
-      height: viewport[1],
-    };
-
-    let output = await screenshot(url, format, dims);
+    let output = await screenshot(url, format, viewport, dpr);
 
     // output to Function logs
-    console.log(url, format, dims, size, aspectratio);
+    console.log(url, format, { viewport }, { size }, { dpr }, { aspectratio });
 
     return {
       statusCode: 200,
