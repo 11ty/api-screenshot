@@ -2,7 +2,7 @@
 directory = "functions"
 
 [[redirects]]
-from = "/*"
-to = "/.netlify/functions/screenshot"
-status = 200
+from = "/1.0/*"
+to = "https://v1.screenshot.11ty.dev/:splat"
+status = 301
 force = true
