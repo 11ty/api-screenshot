@@ -15,7 +15,11 @@ async function screenshot(url, format, viewportSize, withJs = true) {
   const browser = await chromium.puppeteer.launch({
     executablePath: await chromium.executablePath,
     args: chromium.args,
-    defaultViewport: viewportSize,
+    defaultViewport: {
+      width: viewportSize[0],
+      height: viewportSize[1],
+      deviceScaleFactor: 2,
+    },
     headless: chromium.headless,
   });
 
@@ -25,8 +29,9 @@ async function screenshot(url, format, viewportSize, withJs = true) {
     page.setJavaScriptEnabled(false);
   }
 
+  // TODO is there a way to bail at timeout and still show what’s rendered on the page?
   await page.goto(url, {
-    waitUntil: ["load", "networkidle0"],
+    waitUntil: ["load"],
     timeout: 8500
   });
 
@@ -101,15 +106,10 @@ async function handler(event, context) {
       throw new Error("Incorrect API usage. Expects one of: /:url/ or /:url/:size/ or /:url/:size/:aspectratio/")
     }
 
-    let dims = {
-      width: viewport[0],
-      height: viewport[1],
-    };
-
-    let output = await screenshot(url, format, dims);
+    let output = await screenshot(url, format, viewport);
 
     // output to Function logs
-    console.log(url, format, dims, size, aspectratio);
+    console.log(url, format, viewport, size, aspectratio);
 
     return {
       statusCode: 200,
