@@ -66,21 +66,20 @@ async function handler(event, context) {
 
   if(!size || size === "small") {
     if(!aspectratio || parseInt(aspectratio, 10) === 1) {
-      viewport = [420, 420];
+      viewport = [375, 375];
     } else if(parseFloat(aspectratio) === 0.5625) {
-      viewport = [236, 420];
+      viewport = [375, 667];
     }
   } else if(size === "medium") {
     if(!aspectratio || parseInt(aspectratio, 10) === 1) {
-      viewport = [600, 600];
+      viewport = [650, 650];
     } else if(parseFloat(aspectratio) === 0.5625) {
-      viewport = [338, 600];
+      viewport = [650, 1156];
     }
   } else if(size === "large") {
+    // 0.5625 aspect ratio not supported on large
     if(!aspectratio || parseInt(aspectratio, 10) === 1) {
       viewport = [1024, 1024];
-    } else if(parseFloat(aspectratio) === 0.5625) {
-      viewport = [576, 1024];
     }
   } else if(size === "opengraph") {
     // ignores aspectratio
@@ -117,11 +116,12 @@ async function handler(event, context) {
       isBase64Encoded: true
     };
   } catch (error) {
-    // TODO? return a 200 for timeout errors so the ODB keeps in cache
     console.log("Error", error);
 
     return {
-      statusCode: 500,
+      // We need to return 200 here or Firefox won’t display the image
+      // HOWEVER a 200 means that if it times out on the first attempt it will stay the default image until the next build.
+      statusCode: 200,
       headers: {
         "content-type": "image/svg+xml",
         "x-error-message": error.message
