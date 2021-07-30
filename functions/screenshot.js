@@ -60,15 +60,12 @@ async function handler(event, context) {
   let format = "jpeg"; // hardcoded for now
   let viewport = [];
 
-  if(!format) {
-    format = "jpeg";
-  }
+  // Set Defaults
+  format = format || "jpeg";
+  aspectratio = aspectratio || "1:1";
+  size = size || "small";
 
-  if(!aspectratio) {
-    aspectratio = "1:1";
-  }
-
-  if(!size || size === "small") {
+  if(size === "small") {
     if(aspectratio === "1:1") {
       viewport = [375, 375];
     } else if(aspectratio === "9:16") {

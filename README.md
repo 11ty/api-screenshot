@@ -10,8 +10,8 @@ Links have the formats:
 Notes:
 * `url` must be URI encoded.
 * Valid `size` values:
-  * `small`: 375×___
+  * `small`: 375×___ (default)
   * `medium`: 650×___
   * `large`: 1024×___ (`aspectratio` of `9:16` is not supported)
   * `opengraph`: 1200×630 (`aspectratio` is ignored)
-* Valid `aspectratio` values: `1:1`, `9:16`
+* Valid `aspectratio` values: `1:1` (default), `9:16`
