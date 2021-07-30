@@ -64,21 +64,25 @@ async function handler(event, context) {
     format = "jpeg";
   }
 
+  if(!aspectratio) {
+    aspectratio = "1:1";
+  }
+
   if(!size || size === "small") {
-    if(!aspectratio || parseInt(aspectratio, 10) === 1) {
+    if(aspectratio === "1:1") {
       viewport = [375, 375];
-    } else if(parseFloat(aspectratio) === 0.5625) {
+    } else if(aspectratio === "9:16") {
       viewport = [375, 667];
     }
   } else if(size === "medium") {
-    if(!aspectratio || parseInt(aspectratio, 10) === 1) {
+    if(aspectratio === "1:1") {
       viewport = [650, 650];
-    } else if(parseFloat(aspectratio) === 0.5625) {
+    } else if(aspectratio === "9:16") {
       viewport = [650, 1156];
     }
   } else if(size === "large") {
     // 0.5625 aspect ratio not supported on large
-    if(!aspectratio || parseInt(aspectratio, 10) === 1) {
+    if(aspectratio === "1:1") {
       viewport = [1024, 1024];
     }
   } else if(size === "opengraph") {
