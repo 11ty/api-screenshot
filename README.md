@@ -3,9 +3,9 @@
 ## Usage
 
 Links have the formats:
-* `https://screenshot.11ty.dev/1.0/:url/`
-* `https://screenshot.11ty.dev/1.0/:url/:size/`
-* `https://screenshot.11ty.dev/1.0/:url/:size/:aspectratio/`
+* `https://v1.screenshot.11ty.dev/1.0/:url/`
+* `https://v1.screenshot.11ty.dev/1.0/:url/:size/`
+* `https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/`
 
 Notes:
 * `url` must be URI encoded.
