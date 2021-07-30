@@ -6,3 +6,9 @@ from = "/1.0/*"
 to = "https://v1.screenshot.11ty.dev/:splat"
 status = 301
 force = true
+
+[[redirects]]
+from = "/"
+to = "https://v1.screenshot.11ty.dev/"
+status = 301
+force = true
