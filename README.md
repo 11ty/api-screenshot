@@ -21,3 +21,8 @@ https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/
 * Valid `aspectratio` values:
   * `1:1` (default)
   * `9:16`
+
+## Deploy
+
+<a href="https://app.netlify.com/start/deploy?repository=https://github.com/11ty/api-screenshot
+"><img src="https://www.netlify.com/img/deploy/button.svg" border="0" alt="Deploy to Netlify"></a>
