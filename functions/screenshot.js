@@ -117,11 +117,12 @@ async function handler(event, context) {
       isBase64Encoded: true
     };
   } catch (error) {
-    // TODO? return a 200 for timeout errors so the ODB keeps in cache
     console.log("Error", error);
 
     return {
-      statusCode: 500,
+      // We need to return 200 here or Firefox won’t display the image
+      // HOWEVER a 200 means that if it times out on the first attempt it will stay the default image until the next build.
+      statusCode: 200,
       headers: {
         "content-type": "image/svg+xml",
         "x-error-message": error.message
