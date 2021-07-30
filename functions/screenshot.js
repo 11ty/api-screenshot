@@ -11,14 +11,14 @@ function isFullUrl(url) {
   }
 }
 
-async function screenshot(url, format, viewportSize, withJs = true) {
+async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
   const browser = await chromium.puppeteer.launch({
     executablePath: await chromium.executablePath,
     args: chromium.args,
     defaultViewport: {
       width: viewportSize[0],
       height: viewportSize[1],
-      deviceScaleFactor: 1.4,
+      deviceScaleFactor: parseFloat(dpr),
     },
     headless: chromium.headless,
   });
@@ -53,15 +53,9 @@ async function screenshot(url, format, viewportSize, withJs = true) {
 
 // Based on https://github.com/DavidWells/netlify-functions-workshop/blob/master/lessons-code-complete/use-cases/13-returning-dynamic-images/functions/return-image.js
 async function handler(event, context) {
-  // Links have the formats:
-  //   /:url/
-  //   /:url/:size/
-  //   /:url/:size/:aspectratio/
-  // Valid aspectratio values: 1, 0.5625
-
-  // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/square/
+  // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/small/1:1/1.4/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [url, size, aspectratio] = pathSplit;
+  let [url, size, aspectratio, dpr] = pathSplit;
   let format = "jpeg"; // hardcoded for now
   let viewport = [];
 
@@ -69,6 +63,7 @@ async function handler(event, context) {
   format = format || "jpeg";
   aspectratio = aspectratio || "1:1";
   size = size || "small";
+  dpr = dpr || 1;
 
   if(size === "small") {
     if(aspectratio === "1:1") {
@@ -103,7 +98,7 @@ async function handler(event, context) {
       throw new Error("Incorrect API usage. Expects one of: /:url/ or /:url/:size/ or /:url/:size/:aspectratio/")
     }
 
-    let output = await screenshot(url, format, viewport);
+    let output = await screenshot(url, format, viewport, dpr);
 
     // output to Function logs
     console.log(url, format, viewport, size, aspectratio);
