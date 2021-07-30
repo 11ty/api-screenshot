@@ -53,9 +53,9 @@ async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
 
 // Based on https://github.com/DavidWells/netlify-functions-workshop/blob/master/lessons-code-complete/use-cases/13-returning-dynamic-images/functions/return-image.js
 async function handler(event, context) {
-  // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/small/1:1/1.4/
+  // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/small/1:1/smaller/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [url, size, aspectratio, dpr] = pathSplit;
+  let [url, size, aspectratio, zoom] = pathSplit;
   let format = "jpeg"; // hardcoded for now
   let viewport = [];
 
@@ -63,7 +63,13 @@ async function handler(event, context) {
   format = format || "jpeg";
   aspectratio = aspectratio || "1:1";
   size = size || "small";
-  dpr = dpr || 1;
+
+  let dpr = 1;
+  if(zoom === "bigger") {
+    dpr = 1.4;
+  } else if(zoom === "smaller") {
+    dpr = 0.71428571;
+  }
 
   if(size === "small") {
     if(aspectratio === "1:1") {
@@ -83,9 +89,9 @@ async function handler(event, context) {
       viewport = [1024, 1024];
     }
   } else if(size === "opengraph") {
-    // ignores aspectratio, overrides dpr
+    // ignores aspectratio and zoom/dpr
     viewport = [857, 450];
-    dpr = 1.4;
+    dpr = 1.4; // the math calculates to a 1200×630 final image
   }
 
   url = decodeURIComponent(url);
@@ -102,7 +108,7 @@ async function handler(event, context) {
     let output = await screenshot(url, format, viewport, dpr);
 
     // output to Function logs
-    console.log(url, format, viewport, size, aspectratio);
+    console.log(url, format, { viewport }, { size }, { dpr }, { aspectratio });
 
     return {
       statusCode: 200,
