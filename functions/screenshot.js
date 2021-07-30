@@ -18,7 +18,7 @@ async function screenshot(url, format, viewportSize, withJs = true) {
     defaultViewport: {
       width: viewportSize[0],
       height: viewportSize[1],
-      deviceScaleFactor: 2,
+      deviceScaleFactor: 1.4,
     },
     headless: chromium.headless,
   });
