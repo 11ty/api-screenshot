@@ -84,8 +84,8 @@ async function handler(event, context) {
     }
   } else if(size === "opengraph") {
     // ignores aspectratio, overrides dpr
-    viewport = [600, 315];
-    dpr = 2;
+    viewport = [857, 450];
+    dpr = 1.4;
   }
 
   url = decodeURIComponent(url);
