@@ -17,8 +17,10 @@ https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/:zoom/
 * Valid `size` values:
   * `small`: 375×___ (default)
   * `medium`: 650×___
-  * `large`: 1024×___ (`aspectratio` of `9:16` is not supported)
-  * `opengraph`: 1200×630 (`aspectratio` is ignored)
+  * `large`: 1024×___
+    * `aspectratio` of `9:16` is not supported (throws an error)
+  * `opengraph`: 1200×630
+    * `aspectratio` and `zoom` are ignored (no errors thrown)
 * Valid `aspectratio` values:
   * `1:1` (default)
   * `9:16`
