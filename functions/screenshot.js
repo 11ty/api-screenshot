@@ -89,9 +89,15 @@ async function handler(event, context) {
       viewport = [1024, 1024];
     }
   } else if(size === "opengraph") {
-    // ignores aspectratio and zoom/dpr
-    viewport = [857, 450];
-    dpr = 1.4; // the math calculates to a 1200×630 final image
+    // ignores aspectratio
+    // always maintain a 1200×630 output image
+    if(zoom === "bigger") { // dpr = 1.4
+      viewport = [857, 450];
+    } else if(zoom === "smaller") { // dpr = 0.714
+      viewport = [1680, 882];
+    } else {
+      viewport = [1200, 630];
+    }
   }
 
   url = decodeURIComponent(url);
