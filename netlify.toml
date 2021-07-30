@@ -2,15 +2,7 @@
 directory = "functions"
 
 [[redirects]]
-# Do not push this redirect to a versioned branch!
-from = "/1.0/*"
-to = "https://v1.screenshot.11ty.dev/:splat"
-status = 301
-force = true
-
-[[redirects]]
-# Do not push this redirect to a versioned branch!
-from = "/"
-to = "https://v1.screenshot.11ty.dev/"
-status = 301
+from = "/*"
+to = "/.netlify/functions/screenshot"
+status = 200
 force = true
