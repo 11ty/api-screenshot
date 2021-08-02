@@ -28,12 +28,7 @@ https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/:zoom/
   * `bigger` (1.4 `devicePixelRatio`)
   * `smaller` (0.71 `devicePixelRatio`)
 
-## Deploy
-
-<a href="https://app.netlify.com/start/deploy?repository=https://github.com/11ty/api-screenshot
-"><img src="https://www.netlify.com/img/deploy/button.svg" border="0" alt="Deploy to Netlify"></a>
-
-## Manual Cache Busting
+### Advanced: Manual Cache Busting
 
 If the screenshots aren’t updating at a high enough frequency you can pass in your own cache busting key using an underscore prefix `_` after your URL.
 
@@ -45,3 +40,8 @@ https://v1.screenshot.11ty.dev/1.0/:url/:size/_20210802/
 https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/_20210802/
 https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/:zoom/_20210802/
 ```
+
+## Deploy
+
+<a href="https://app.netlify.com/start/deploy?repository=https://github.com/11ty/api-screenshot
+"><img src="https://www.netlify.com/img/deploy/button.svg" border="0" alt="Deploy to Netlify"></a>
