@@ -32,3 +32,16 @@ https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/:zoom/
 
 <a href="https://app.netlify.com/start/deploy?repository=https://github.com/11ty/api-screenshot
 "><img src="https://www.netlify.com/img/deploy/button.svg" border="0" alt="Deploy to Netlify"></a>
+
+## Manual Cache Busting
+
+If the screenshots aren’t updating at a high enough frequency you can pass in your own cache busting key using an underscore prefix `_` after your URL.
+
+This can be any arbitrary string tied to your unique build, here’s an example that uses today’s date:
+
+```
+https://v1.screenshot.11ty.dev/1.0/:url/_20210802/
+https://v1.screenshot.11ty.dev/1.0/:url/:size/_20210802/
+https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/_20210802/
+https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/:zoom/_20210802/
+```
