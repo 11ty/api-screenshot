@@ -7,10 +7,10 @@ A runtime service to use live website screenshots on your site.
 Image URLs have the formats:
 
 ```
-https://v1.screenshot.11ty.dev/1.0/:url/
-https://v1.screenshot.11ty.dev/1.0/:url/:size/
-https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/
-https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/:zoom/
+https://v1.screenshot.11ty.dev/:url/
+https://v1.screenshot.11ty.dev/:url/:size/
+https://v1.screenshot.11ty.dev/:url/:size/:aspectratio/
+https://v1.screenshot.11ty.dev/:url/:size/:aspectratio/:zoom/
 ```
 
 * `url` must be URI encoded.
@@ -35,10 +35,10 @@ If the screenshots aren’t updating at a high enough frequency you can pass in 
 This can be any arbitrary string tied to your unique build, here’s an example that uses today’s date:
 
 ```
-https://v1.screenshot.11ty.dev/1.0/:url/_20210802/
-https://v1.screenshot.11ty.dev/1.0/:url/:size/_20210802/
-https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/_20210802/
-https://v1.screenshot.11ty.dev/1.0/:url/:size/:aspectratio/:zoom/_20210802/
+https://v1.screenshot.11ty.dev/:url/_20210802/
+https://v1.screenshot.11ty.dev/:url/:size/_20210802/
+https://v1.screenshot.11ty.dev/:url/:size/:aspectratio/_20210802/
+https://v1.screenshot.11ty.dev/:url/:size/:aspectratio/:zoom/_20210802/
 ```
 
 ## Deploy
