@@ -59,16 +59,31 @@ async function handler(event, context) {
   let format = "jpeg"; // hardcoded for now
   let viewport = [];
 
+  // Manage your own frequency by using a _ prefix and then a hash buster string after your URL
+  // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/_20210802/ and set this to today’s date when you deploy
+  if(size && size.startsWith("_")) {
+    size = undefined;
+  }
+  if(aspectratio && aspectratio.startsWith("_")) {
+    aspectratio = undefined;
+  }
+  if(zoom && zoom.startsWith("_")) {
+    zoom = undefined;
+  }
+
   // Set Defaults
   format = format || "jpeg";
   aspectratio = aspectratio || "1:1";
   size = size || "small";
+  zoom = zoom || "standard";
 
-  let dpr = 1;
+  let dpr;
   if(zoom === "bigger") {
     dpr = 1.4;
   } else if(zoom === "smaller") {
     dpr = 0.71428571;
+  } else if(zoom === "standard") {
+    dpr = 1;
   }
 
   if(size === "small") {
