@@ -2,15 +2,17 @@
 
 A runtime service to use live website screenshots on your site.
 
+Read the [Blog post: Building an Automated Screenshot Service on Netlify in ~140 Lines of Code](https://www.zachleat.com/web/screenshots/).
+
 ## Usage
 
 Image URLs have the formats:
 
 ```
-https://v1.screenshot.11ty.dev/:url/
-https://v1.screenshot.11ty.dev/:url/:size/
-https://v1.screenshot.11ty.dev/:url/:size/:aspectratio/
-https://v1.screenshot.11ty.dev/:url/:size/:aspectratio/:zoom/
+/:url/
+/:url/:size/
+/:url/:size/:aspectratio/
+/:url/:size/:aspectratio/:zoom/
 ```
 
 * `url` must be URI encoded.
@@ -35,10 +37,10 @@ If the screenshots aren’t updating at a high enough frequency you can pass in 
 This can be any arbitrary string tied to your unique build, here’s an example that uses today’s date:
 
 ```
-https://v1.screenshot.11ty.dev/:url/_20210802/
-https://v1.screenshot.11ty.dev/:url/:size/_20210802/
-https://v1.screenshot.11ty.dev/:url/:size/:aspectratio/_20210802/
-https://v1.screenshot.11ty.dev/:url/:size/:aspectratio/:zoom/_20210802/
+/:url/_20210802/
+/:url/:size/_20210802/
+/:url/:size/:aspectratio/_20210802/
+/:url/:size/:aspectratio/:zoom/_20210802/
 ```
 
 ## Deploy
