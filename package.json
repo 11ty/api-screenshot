@@ -1,18 +1,19 @@
 {
   "name": "eleventy-api-screenshot",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "bundle": "zip-it-and-ship-it functions tmp"
-  },
+  "description": "A service to add web page screenshots to your Eleventy sites.",
+  "scripts": {},
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/11ty/api-screenshot.git"
   },
+  "author": {
+    "name": "Zach Leatherman",
+    "email": "zachleatherman@gmail.com",
+    "url": "https://zachleat.com/"
+  },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/11ty/api-screenshot/issues"
   },
