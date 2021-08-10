@@ -4,6 +4,12 @@ A runtime service to use live website screenshots on your site.
 
 Read the [Blog post: Building an Automated Screenshot Service on Netlify in ~140 Lines of Code](https://www.zachleat.com/web/screenshots/).
 
+## Deploy
+
+<a href="https://app.netlify.com/start/deploy?repository=https://github.com/11ty/api-screenshot
+"><img src="https://www.netlify.com/img/deploy/button.svg" border="0" alt="Deploy to Netlify"></a>
+
+
 ## Usage
 
 Image URLs have the formats:
@@ -42,8 +48,3 @@ This can be any arbitrary string tied to your unique build, here’s an example 
 /:url/:size/:aspectratio/_20210802/
 /:url/:size/:aspectratio/:zoom/_20210802/
 ```
-
-## Deploy
-
-<a href="https://app.netlify.com/start/deploy?repository=https://github.com/11ty/api-screenshot
-"><img src="https://www.netlify.com/img/deploy/button.svg" border="0" alt="Deploy to Netlify"></a>
