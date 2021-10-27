@@ -90,8 +90,6 @@ async function handler(event, context) {
   if(size === "fullpage") {
     // ignores aspectratio
     viewport = [375, 375];
-    // override zoom
-    zoom = "smaller";
     screenshotOptions.fullPage = true;
   } else if(size === "small") {
     if(aspectratio === "1:1") {
