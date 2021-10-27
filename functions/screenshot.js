@@ -11,7 +11,7 @@ function isFullUrl(url) {
   }
 }
 
-async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
+async function screenshot(url, format, viewportSize, dpr = 1, withJs = true, screenshotOptions = {}) {
   const browser = await chromium.puppeteer.launch({
     executablePath: await chromium.executablePath,
     args: chromium.args,
@@ -37,13 +37,17 @@ async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
   // let statusCode = response.status();
   // TODO handle 404/500 status codes better
 
-  let options = {
+  let options = Object.assign({
     type: format,
-    encoding: "base64"
-  };
+    encoding: "base64",
+    captureBeyondViewport: false,
+  }, screenshotOptions);
 
   if(format === "jpeg") {
     options.quality = 80;
+  }
+  if(options.fullPage) {
+    options.captureBeyondViewport = true;
   }
 
   let output = await page.screenshot(options);
@@ -60,6 +64,10 @@ async function handler(event, context) {
   let [url, size, aspectratio, zoom] = pathSplit;
   let format = "jpeg"; // hardcoded for now
   let viewport = [];
+  let withJs = true;
+  let screenshotOptions = {
+    fullPage: false
+  };
 
   // Manage your own frequency by using a _ prefix and then a hash buster string after your URL
   // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/_20210802/ and set this to today’s date when you deploy
@@ -88,7 +96,11 @@ async function handler(event, context) {
     dpr = 1;
   }
 
-  if(size === "small") {
+  if(size === "fullpage") {
+    // ignores aspectratio
+    viewport = [375, 375];
+    screenshotOptions.fullPage = true;
+  } else if(size === "small") {
     if(aspectratio === "1:1") {
       viewport = [375, 375];
     } else if(aspectratio === "9:16") {
@@ -128,7 +140,7 @@ async function handler(event, context) {
       throw new Error("Incorrect API usage. Expects one of: /:url/ or /:url/:size/ or /:url/:size/:aspectratio/")
     }
 
-    let output = await screenshot(url, format, viewport, dpr);
+    let output = await screenshot(url, format, viewport, dpr, withJs, screenshotOptions);
 
     // output to Function logs
     console.log(url, format, { viewport }, { size }, { dpr }, { aspectratio });
