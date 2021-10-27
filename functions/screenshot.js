@@ -87,18 +87,11 @@ async function handler(event, context) {
   size = size || "small";
   zoom = zoom || "standard";
 
-  let dpr;
-  if(zoom === "bigger") {
-    dpr = 1.4;
-  } else if(zoom === "smaller") {
-    dpr = 0.71428571;
-  } else if(zoom === "standard") {
-    dpr = 1;
-  }
-
   if(size === "fullpage") {
     // ignores aspectratio
     viewport = [375, 375];
+    // override zoom
+    zoom = "smaller";
     screenshotOptions.fullPage = true;
   } else if(size === "small") {
     if(aspectratio === "1:1") {
@@ -127,6 +120,15 @@ async function handler(event, context) {
     } else {
       viewport = [1200, 630];
     }
+  }
+
+  let dpr;
+  if(zoom === "bigger") {
+    dpr = 1.4;
+  } else if(zoom === "smaller") {
+    dpr = 0.71428571;
+  } else if(zoom === "standard") {
+    dpr = 1;
   }
 
   url = decodeURIComponent(url);
