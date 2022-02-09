@@ -29,13 +29,24 @@ async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
     page.setJavaScriptEnabled(false);
   }
 
-  // TODO is there a way to bail at timeout and still show what’s rendered on the page?
-  let response = await page.goto(url, {
-    waitUntil: ["load", "networkidle0"],
-    timeout: 8500
-  });
+  let response = await Promise.race([
+    page.goto(url, {
+      waitUntil: ["load", "networkidle0"],
+      timeout: 9000
+    }),
+    new Promise(resolve => {
+      setTimeout(() => {
+        resolve(false);
+      }, 8500);
+    }),
+  ]);
+
+  if(response === false) { // timed out, resolved false
+    await page.evaluate(() => window.stop());
+  }
+
   // let statusCode = response.status();
-  // TODO handle 404/500 status codes better
+  // TODO handle 4xx/5xx status codes better
 
   let options = {
     type: format,
