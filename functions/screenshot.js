@@ -37,7 +37,7 @@ async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
     new Promise(resolve => {
       setTimeout(() => {
         resolve(false);
-      }, 7000);
+      }, 6500);
     }),
   ]);
 
