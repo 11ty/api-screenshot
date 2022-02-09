@@ -31,13 +31,13 @@ async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
 
   let response = await Promise.race([
     page.goto(url, {
-      waitUntil: ["load", "networkidle0"],
-      timeout: 9000
+      waitUntil: ["load"],
+      timeout: 8500
     }),
     new Promise(resolve => {
       setTimeout(() => {
         resolve(false);
-      }, 8500);
+      }, 5000);
     }),
   ]);
 
