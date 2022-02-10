@@ -85,8 +85,8 @@ async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
     clip: {
       x: 0,
       y: 0,
-      width: viewport[0],
-      height: viewport[1],
+      width: viewportSize[0],
+      height: viewportSize[1],
     }
   };
 
