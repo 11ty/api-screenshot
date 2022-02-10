@@ -76,10 +76,9 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait 
 async function handler(event, context) {
   // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/small/1:1/smaller/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
-  let [url, size, aspectratio, zoom] = pathSplit;
+  let [url, size, aspectratio, zoom, cachebuster] = pathSplit;
   let format = "jpeg"; // hardcoded for now
   let viewport = [];
-  let cachebuster;
 
   // Manage your own frequency by using a _ prefix and then a hash buster string after your URL
   // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/_20210802/ and set this to today’s date when you deploy
@@ -101,10 +100,14 @@ async function handler(event, context) {
   let optionsMatch = (cachebuster || "").match(/\_wait\:(\d)/i);
   if(optionsMatch && optionsMatch[1]) {
     let waitIndex = parseInt(optionsMatch[1], 10);
-    if(waitIndex === 1) {
-      wait = ["load", "network0"];
+    if(waitIndex === 0) {
+      wait = ["domcontentloaded"];
+    } else if(waitIndex === 1) {
+      wait = ["load"];
     } else if(waitIndex === 2) {
-      wait = ["load", "network2"];
+      wait = ["load", "networkidle0"];
+    } else if(waitIndex === 3) {
+      wait = ["load", "networkidle2"];
     }
   }
 
