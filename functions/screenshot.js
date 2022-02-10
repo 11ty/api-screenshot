@@ -11,30 +11,6 @@ function isFullUrl(url) {
   }
 }
 
-// Thanks GitHub Blog! https://github.blog/2021-06-22-framework-building-open-graph-images/
-function fakeLoadEvent(page) {
-  return page.evaluate(async () => {
-    const selectors = Array.from(document.querySelectorAll("img"));
-    await Promise.all([
-      document.fonts.ready,
-      ...selectors.map((img) => {
-        // Image has already finished loading, let’s see if it worked
-        if (img.complete) {
-          // Image loaded and has presence
-          if (img.naturalHeight !== 0) return;
-          // Image failed, so it has no height
-          throw new Error("Image failed to load");
-        }
-        // Image hasn’t loaded yet, added an event listener to know when it does
-        return new Promise((resolve, reject) => {
-          img.addEventListener("load", resolve);
-          img.addEventListener("error", reject);
-        });
-      }),
-    ]);
-  });
-}
-
 async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
   const browser = await chromium.puppeteer.launch({
     executablePath: await chromium.executablePath,
@@ -54,15 +30,10 @@ async function screenshot(url, format, viewportSize, dpr = 1, withJs = true) {
   }
 
   let response = await Promise.race([
-    (async () => {
-      await page.goto(url, {
-        waitUntil: ["domcontentloaded"],
-        timeout: 8500,
-      });
-
-      // Wait until all images and fonts have loaded
-      await fakeLoadEvent(page);
-    })(),
+    page.goto(url, {
+      waitUntil: ["load"],
+      timeout: 8500,
+    }),
     new Promise(resolve => {
       setTimeout(() => {
         resolve(false); // false is expected below
