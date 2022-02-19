@@ -11,7 +11,7 @@ function isFullUrl(url) {
   }
 }
 
-async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait }) {
+async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait, timeout = 9000 }) {
   const browser = await chromium.puppeteer.launch({
     executablePath: await chromium.executablePath,
     args: chromium.args,
@@ -32,12 +32,12 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait 
   let response = await Promise.race([
     page.goto(url, {
       waitUntil: wait || ["load"],
-      timeout: 8500,
+      timeout,
     }),
     new Promise(resolve => {
       setTimeout(() => {
         resolve(false); // false is expected below
-      }, 6000);
+      }, Math.max(timeout - 2000, 1000));
     }),
   ]);
 
@@ -77,7 +77,7 @@ async function handler(event, context) {
   // e.g. /https%3A%2F%2Fwww.11ty.dev%2F/small/1:1/smaller/
   let pathSplit = event.path.split("/").filter(entry => !!entry);
   let [url, size, aspectratio, zoom, cachebuster] = pathSplit;
-  let format = "jpeg"; // hardcoded for now
+  let format = "jpeg"; // hardcoded for now, but png and webp are supported!
   let viewport = [];
 
   // Manage your own frequency by using a _ prefix and then a hash buster string after your URL
@@ -96,19 +96,27 @@ async function handler(event, context) {
   }
 
   // Options
+  let pathOptions = {};
+  let optionsMatch = (cachebuster || "").split("_").filter(entry => !!entry);
+  for(let o of optionsMatch) {
+    let [key, value] = o.split(":");
+    pathOptions[key.toLowerCase()] = parseInt(value, 10);
+  }
+
   let wait = ["load"];
-  let optionsMatch = (cachebuster || "").match(/\_wait\:(\d)/i);
-  if(optionsMatch && optionsMatch[1]) {
-    let waitIndex = parseInt(optionsMatch[1], 10);
-    if(waitIndex === 0) {
-      wait = ["domcontentloaded"];
-    } else if(waitIndex === 1) {
-      wait = ["load"];
-    } else if(waitIndex === 2) {
-      wait = ["load", "networkidle0"];
-    } else if(waitIndex === 3) {
-      wait = ["load", "networkidle2"];
-    }
+  if(pathOptions.wait === 0) {
+    wait = ["domcontentloaded"];
+  } else if(pathOptions.wait === 1) {
+    wait = ["load"];
+  } else if(pathOptions.wait === 2) {
+    wait = ["load", "networkidle0"];
+  } else if(pathOptions.wait === 3) {
+    wait = ["load", "networkidle2"];
+  }
+
+  let timeout;
+  if(pathOptions.timeout) {
+    timeout = pathOptions.timeout;
   }
 
   // Set Defaults
@@ -171,6 +179,7 @@ async function handler(event, context) {
       viewport,
       dpr,
       wait,
+      timeout,
     });
 
     // output to Function logs
