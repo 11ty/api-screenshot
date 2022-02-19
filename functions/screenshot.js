@@ -116,7 +116,7 @@ async function handler(event, context) {
 
   let timeout;
   if(pathOptions.timeout) {
-    timeout = pathOptions.timeout;
+    timeout = pathOptions.timeout * 1000;
   }
 
   // Set Defaults
