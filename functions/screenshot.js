@@ -26,11 +26,6 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait,
     headless: chromium.headless,
   });
 
-  if(waitOptions.emoji) {
-    // via https://github.com/puppeteer/puppeteer/issues/4086
-    await chromium.font('https://raw.githack.com/googlei18n/noto-emoji/master/fonts/NotoColorEmoji.ttf');
-  }
-
   const page = await browser.newPage();
 
   if(!withJs) {
