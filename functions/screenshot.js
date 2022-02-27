@@ -32,23 +32,11 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait,
     page.setJavaScriptEnabled(false);
   }
 
-  let gotoPromise = page.goto(url, {
-    waitUntil: wait || ["load"],
-    timeout,
-  });
-  let promise;
-  // See https://github.com/puppeteer/puppeteer/issues/2692
-  if(waitOptions["web-fonts"]) {
-    promise = Promise.all([
-      gotoPromise,
-      page.evaluateHandle("document.fonts.ready")
-    ]);
-  } else {
-    promise = gotoPromise;
-  }
-
   let response = await Promise.race([
-    promise,
+    page.goto(url, {
+      waitUntil: wait || ["load"],
+      timeout,
+    }),
     new Promise(resolve => {
       setTimeout(() => {
         resolve(false); // false is expected below
@@ -58,6 +46,11 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait,
 
   if(response === false) { // timed out, resolved false
     await page.evaluate(() => window.stop());
+  } else {
+    // See https://github.com/puppeteer/puppeteer/issues/2692
+    if(waitOptions["web-fonts"]) {
+      await page.evaluateHandle("document.fonts.ready");
+    }
   }
 
   // let statusCode = response.status();
