@@ -50,6 +50,7 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait,
     // See https://github.com/puppeteer/puppeteer/issues/2692
     if(waitOptions["web-fonts"]) {
       await page.evaluateHandle("document.fonts.ready");
+      console.log( "Web fonts loaded!" );
     }
   }
 
@@ -123,7 +124,7 @@ async function handler(event, context) {
     wait = ["load", "networkidle2"];
   } else if(pathOptions.wait === 4) {
     // wait for web fonts
-    wait = ["load"];
+    wait = ["load", "networkidle0"];
     waitOptions["web-fonts"] = true;
   }
 
