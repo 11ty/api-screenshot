@@ -48,9 +48,11 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait,
     await page.evaluate(() => window.stop());
   } else {
     // See https://github.com/puppeteer/puppeteer/issues/2692
-    if(waitOptions["web-fonts"]) {
+    if(waitOptions.emoji) {
+      await page.addStyleTag({
+        url: "https://fonts.googleapis.com/css2?family=Noto+Color+Emoji"
+      });
       await page.evaluateHandle("document.fonts.ready");
-      console.log( "Web fonts loaded!" );
     }
   }
 
@@ -125,7 +127,7 @@ async function handler(event, context) {
   } else if(pathOptions.wait === 4) {
     // wait for web fonts
     wait = ["load", "networkidle0"];
-    waitOptions["web-fonts"] = true;
+    waitOptions.emoji = true;
   }
 
   let timeout;
