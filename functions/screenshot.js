@@ -11,7 +11,7 @@ function isFullUrl(url) {
   }
 }
 
-async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait, timeout = 8500 }) {
+async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait, waitOptions = {}, timeout = 8500 }) {
   // Must be between 3000 and 8500
   timeout = Math.min(Math.max(timeout, 3000), 8500);
 
@@ -32,11 +32,23 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait,
     page.setJavaScriptEnabled(false);
   }
 
+  let gotoPromise = page.goto(url, {
+    waitUntil: wait || ["load"],
+    timeout,
+  });
+  let promise;
+  // See https://github.com/puppeteer/puppeteer/issues/2692
+  if(waitOptions["web-fonts"]) {
+    promise = Promise.all([
+      gotoPromise,
+      page.evaluateHandle("document.fonts.ready")
+    ]);
+  } else {
+    promise = gotoPromise;
+  }
+
   let response = await Promise.race([
-    page.goto(url, {
-      waitUntil: wait || ["load"],
-      timeout,
-    }),
+    promise,
     new Promise(resolve => {
       setTimeout(() => {
         resolve(false); // false is expected below
@@ -107,6 +119,7 @@ async function handler(event, context) {
   }
 
   let wait = ["load"];
+  let waitOptions = {};
   if(pathOptions.wait === 0) {
     wait = ["domcontentloaded"];
   } else if(pathOptions.wait === 1) {
@@ -115,6 +128,10 @@ async function handler(event, context) {
     wait = ["load", "networkidle0"];
   } else if(pathOptions.wait === 3) {
     wait = ["load", "networkidle2"];
+  } else if(pathOptions.wait === 4) {
+    // wait for web fonts
+    wait = ["load"];
+    waitOptions["web-fonts"] = true;
   }
 
   let timeout;
@@ -182,11 +199,12 @@ async function handler(event, context) {
       viewport,
       dpr,
       wait,
+      waitOptions,
       timeout,
     });
 
     // output to Function logs
-    console.log(url, format, { viewport }, { size }, { dpr }, { aspectratio });
+    console.log(url, format, { viewport }, { size }, { dpr }, { aspectratio }, { wait }, { waitOptions });
 
     return {
       statusCode: 200,
