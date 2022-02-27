@@ -53,7 +53,7 @@ async function screenshot(url, { format, viewport, dpr = 1, withJs = true, wait,
         url: "https://fonts.googleapis.com/css2?family=Noto+Color+Emoji"
       });
       await page.addStyleTag({
-        content: ":root { font-family: Noto Color Emoji, sans-serif; }"
+        content: ":root { font-family: sans-serif, Noto Color Emoji; }"
       });
       await page.evaluateHandle(`document.fonts.load("1em Noto Color Emoji")`);
     }
