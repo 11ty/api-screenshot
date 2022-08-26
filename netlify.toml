@@ -6,3 +6,7 @@ from = "/*"
 to = "/.netlify/builders/screenshot"
 status = 200
 force = true
+
+[build.environment]
+NODE_VERSION = "12"
+AWS_LAMBDA_JS_RUNTIME = "nodejs12.x"
