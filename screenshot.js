@@ -1,25 +1,26 @@
-import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
+// import chromium from "@sparticuz/chromium";
+// import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 
-chromium.setHeadlessMode = true;
+// chromium.setHeadlessMode = true;
 
-chromium.setGraphicsMode = false;
+// chromium.setGraphicsMode = false;
 
 async function screenshot(url, options = {}) {
-	let { format = "jpeg", viewport = [375, 375], dpr = 1, withJs = true, wait, timeout = 8000 } = options;
+	let { format = "jpeg", viewport = [375, 375], dpr = 1, withJs = true, wait, timeout = 6000 } = options;
 
   // Must be between 500 and 8000
   timeout = Math.min(Math.max(timeout, 500), 8000);
 
   const browser = await puppeteer.launch({
-    executablePath: await chromium.executablePath(),
-    args: chromium.args,
+    // executablePath: await chromium.executablePath(),
+    // args: chromium.args,
+    // headless: chromium.headless,
     defaultViewport: {
       width: viewport[0],
       height: viewport[1],
       deviceScaleFactor: parseFloat(dpr),
     },
-    headless: chromium.headless,
     ignoreHTTPSErrors: true,
   });
 
