@@ -5,7 +5,7 @@
   "type": "module",
   "main": "screenshot.js",
   "scripts": {
-    "start": "vercel dev"
+    "start": "LOCAL_DEV=true vercel dev"
   },
   "license": "MIT",
   "repository": {
