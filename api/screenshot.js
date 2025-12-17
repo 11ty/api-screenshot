@@ -58,7 +58,7 @@ export async function GET(request, context) {
     optionsString = aspectratio;
     aspectratio = undefined;
   }
-  if(aspectratio === "x.jpeg") {
+  if(aspectratio === "x.jpeg" || aspectratio === "x.jpg") {
     aspectratio = undefined;
   }
   if(zoom && zoom.startsWith("_")) {
