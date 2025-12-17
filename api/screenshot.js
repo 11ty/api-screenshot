@@ -58,7 +58,7 @@ export async function GET(request, context) {
     optionsString = aspectratio;
     aspectratio = undefined;
   }
-  if(aspectratio === "x.jpeg" || aspectratio === "x.jpg") {
+  if(aspectratio === "x.jpg") {
     aspectratio = undefined;
   }
   if(zoom && zoom.startsWith("_")) {
@@ -228,7 +228,10 @@ export async function GET(request, context) {
       status: 200,
       headers: {
         "content-type": `image/${format}`,
-        "cache-control": `public, s-maxage=${ONE_YEAR}, stale-while-revalidate=${ONE_WEEK}`
+        "cache-control": `public, s-maxage=${ONE_YEAR}, stale-while-revalidate=${ONE_WEEK}`,
+        // Buffer fix attempt
+        "access-control-allow-origin": "*",
+        "content-length": output.length,
       }
     });
   } catch (error) {
