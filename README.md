@@ -13,6 +13,7 @@ Image URLs have the formats:
 ```
 /:url/
 /:url/:size/
+/:url/:size/x.jpeg
 /:url/:size/:aspectratio/
 /:url/:size/:aspectratio/:zoom/
 ```
