@@ -9,8 +9,12 @@ const ONE_YEAR = ONE_DAY*365; // maximum s-maxage
 
 // Each supported ratio is another render and another CDN cache entry, so this is
 // an allow list rather than a range: 1.5x and 2x cover the screens that social
-// networks display opengraph images on.
-const VALID_DPR = [1.5, 2];
+// networks display opengraph images on. Maps the URL spelling to the ratio—`1-5`
+// rather than `1.5`, to stay safe in a query string.
+const VALID_DPR = {
+  "1-5": 1.5,
+  "2": 2,
+};
 
 const VALID_UNDERSCORE_OPTIONS = ["timeout", "wait", "dpr"];
 const VALID_PARAMS = ["url", "size", "ratio", "zoom", "options"];
@@ -76,7 +80,6 @@ export async function GET(request, context) {
 
   // Options
   let pathOptions = {};
-  let rawOptions = {};
   let optionsMatch = (optionsString || "").split("_").filter(entry => !!entry);
   for(let o of optionsMatch) {
     let [key, value] = o.split(":");
@@ -85,9 +88,8 @@ export async function GET(request, context) {
       console.log( "Invalid underscore option key", key, value );
       forceDedupeRedirect = true;
     } else {
-      rawOptions[key.toLowerCase()] = value;
-      // `dpr` is the only option that accepts a fractional value
-      pathOptions[key.toLowerCase()] = key === "dpr" ? parseFloat(value) : parseInt(value, 10);
+      // `dpr` is matched against its URL spelling, every other option is a number
+      pathOptions[key.toLowerCase()] = key === "dpr" ? value : parseInt(value, 10);
     }
   }
 
@@ -138,19 +140,14 @@ export async function GET(request, context) {
   // with more pixels (e.g. `opengraph` returns 2400x1260 instead of 1200x630 at
   // `_dpr:2`). Useful for opengraph images, which social networks display on
   // high density screens.
-  if(pathOptions.dpr !== undefined) {
-    if(!VALID_DPR.includes(pathOptions.dpr)) {
+  if("dpr" in pathOptions) {
+    // `hasOwn` so that inherited property names (`constructor`) aren’t a match
+    if(!Object.hasOwn(VALID_DPR, pathOptions.dpr)) {
       console.log( "Invalid dpr", pathOptions.dpr );
       delete pathOptions.dpr;
       forceDedupeRedirect = true;
     } else {
-      if(`${pathOptions.dpr}` !== rawOptions.dpr) {
-        // `_dpr:2.0` renders the same image as `_dpr:2`, so redirect to the
-        // canonical spelling rather than caching it twice on the CDN
-        console.log( "Non-canonical dpr", rawOptions.dpr );
-        forceDedupeRedirect = true;
-      }
-      dpr = dpr * pathOptions.dpr;
+      dpr = dpr * VALID_DPR[pathOptions.dpr];
     }
   }
 

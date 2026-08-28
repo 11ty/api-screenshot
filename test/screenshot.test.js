@@ -104,7 +104,7 @@ describe("_dpr multiplies the output resolution without changing the framing", (
   // [path suffix, expected output size]
   let cases = [
     ["opengraph/", [1200, 630]],
-    ["opengraph/_dpr:1.5/", [1800, 945]],
+    ["opengraph/_dpr:1-5/", [1800, 945]],
     ["opengraph/_dpr:2/", [2400, 1260]],
     // `x.jpg` is allowed to follow the options segment
     ["opengraph/_dpr:2/x.jpg", [2400, 1260]],
@@ -123,15 +123,19 @@ describe("_dpr multiplies the output resolution without changing the framing", (
 
 describe("invalid _dpr values de-dupe to a canonical URL", () => {
   let cases = [
-    // `1` is already the default, and only 1.5 and 2 are supported
+    // `1` is already the default, and only `1-5` and `2` are supported
     ["opengraph/_dpr:1/", "opengraph/"],
     ["opengraph/_dpr:3/", "opengraph/"],
     ["opengraph/_dpr:2.5/", "opengraph/"],
     ["opengraph/_dpr:0/", "opengraph/"],
     ["opengraph/_dpr:abc/", "opengraph/"],
-    // a supported ratio spelled differently redirects to the canonical spelling
-    ["opengraph/_dpr:2.0/", "opengraph/_dpr:2/"],
-    ["opengraph/_dpr:1.50/", "opengraph/_dpr:1.5/"],
+    // the `.` spellings are not the supported ones
+    ["opengraph/_dpr:1.5/", "opengraph/"],
+    ["opengraph/_dpr:2.0/", "opengraph/"],
+    // an option with no value at all
+    ["opengraph/_dpr/", "opengraph/"],
+    // an inherited property name is not a valid ratio
+    ["opengraph/_dpr:constructor/", "opengraph/"],
     // valid options alongside an invalid one are preserved
     ["opengraph/_wait:2_dpr:9/", "opengraph/_wait:2/"],
   ];
