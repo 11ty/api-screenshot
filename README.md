@@ -63,6 +63,29 @@ Number of seconds to wait before the request times out. We will attempt to simul
 /:url/_timeout:9/
 ```
 
+#### Higher Resolution
+
+`_dpr:2` multiplies the output resolution without changing the framing. The viewport stays the same size in CSS pixels, so you get the same screenshot with twice as many pixels—useful for `opengraph` images, which social networks display on 2× screens.
+
+* Valid `dpr` values:
+  * `1.5`
+  * `2`
+
+Any other value—including `1`, which is already the default—redirects to the canonical URL without it.
+
+```
+/:url/opengraph/_dpr:2/
+/:url/opengraph/_dpr:2/x.jpg
+```
+
+| Request | Output |
+| --- | --- |
+| `/:url/opengraph/` | 1200×630 |
+| `/:url/opengraph/_dpr:1.5/` | 1800×945 |
+| `/:url/opengraph/_dpr:2/` | 2400×1260 |
+
+This is unrelated to `zoom`, which changes how much of the page fits in the shot while keeping the output size fixed. The two combine: `/:url/opengraph/1:1/bigger/_dpr:2/` is the `bigger` framing at 2400×1260.
+
 #### Combine these options
 
 You can use any of these advanced options together, like `/:url/_wait:0_timeout:2/`. Order only matters to the uniqueness of the URL caching on the CDN: `/:url/_wait:0/` and `/:url/_wait:0/` will be functionally equivalent but make two different screenshot requests.

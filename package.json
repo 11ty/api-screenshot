@@ -5,7 +5,8 @@
   "type": "module",
   "main": "screenshot.js",
   "scripts": {
-    "start": "LOCAL_DEV=true vercel dev"
+    "start": "LOCAL_DEV=true vercel dev",
+    "test": "node --test test/*.test.js"
   },
   "license": "MIT",
   "repository": {
@@ -23,11 +24,11 @@
   },
   "homepage": "https://github.com/11ty/api-screenshot#readme",
   "dependencies": {
-    "@sparticuz/chromium": "^126.0.0",
-    "puppeteer-core": "^22.13.1"
+    "@sparticuz/chromium": "^149.0.0",
+    "puppeteer-core": "^25.9.0"
   },
   "devDependencies": {
-    "puppeteer": "^22.13.1",
-    "vercel": "^35.0.2"
+    "puppeteer": "^25.9.0",
+    "vercel": "^59.9.1"
   }
 }

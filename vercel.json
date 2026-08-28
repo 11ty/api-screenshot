@@ -11,6 +11,7 @@
 		{ "source": "/:url/:size/", "destination": "/api/screenshot/" },
 		{ "source": "/:url/:size/x.jpg", "destination": "/api/screenshot/" },
 		{ "source": "/:url/:size/:ratio/", "destination": "/api/screenshot/" },
+		{ "source": "/:url/:size/:ratio/x.jpg", "destination": "/api/screenshot/" },
 		{ "source": "/:url/:size/:ratio/:zoom/", "destination": "/api/screenshot/" },
 		{ "source": "/:url/:size/:ratio/:zoom/:options/", "destination": "/api/screenshot/" }
 	],
