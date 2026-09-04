@@ -88,4 +88,4 @@ This is unrelated to `zoom`, which changes how much of the page fits in the shot
 
 #### Combine these options
 
-You can use any of these advanced options together, like `/:url/_wait:0_timeout:2/`. Order only matters to the uniqueness of the URL caching on the CDN: `/:url/_wait:0/` and `/:url/_wait:0/` will be functionally equivalent but make two different screenshot requests.
+You can use any of these advanced options together, like `/:url/_wait:0_timeout:2/`. Order only matters to the uniqueness of the URL caching on the CDN: `/:url/_wait:0_timeout:2/` and `/:url/_timeout:2_wait:0/` will be functionally equivalent but make two different screenshot requests.
