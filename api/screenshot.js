@@ -7,17 +7,10 @@ const ONE_DAY = ONE_HOUR*24;
 const ONE_WEEK = ONE_DAY*7;
 const ONE_YEAR = ONE_DAY*365; // maximum s-maxage
 
-// Each supported ratio is another render and another CDN cache entry, so this is
-// an allow list rather than a range: 1.5x and 2x cover the screens that social
-// networks display opengraph images on. Maps the URL spelling to the ratio—`1-5`
-// rather than `1.5`, to stay safe in a query string.
-const VALID_DPR = {
-  "1-5": 1.5,
-  "2": 2,
-};
-
-const VALID_UNDERSCORE_OPTIONS = ["timeout", "wait", "dpr"];
-const VALID_PARAMS = ["url", "size", "ratio", "zoom", "options"];
+const VALID_UNDERSCORE_OPTIONS = ["timeout", "wait"];
+// Vercel appends every rewrite placeholder in `vercel.json` as a query param, so
+// these names have to stay in sync with it.
+const VALID_PARAMS = ["url", "size", "aspectratio", "zoom", "options"];
 
 function isFullUrl(url) {
   try {
@@ -88,8 +81,7 @@ export async function GET(request, context) {
       console.log( "Invalid underscore option key", key, value );
       forceDedupeRedirect = true;
     } else {
-      // `dpr` is matched against its URL spelling, every other option is a number
-      pathOptions[key.toLowerCase()] = key === "dpr" ? value : parseInt(value, 10);
+      pathOptions[key.toLowerCase()] = parseInt(value, 10);
     }
   }
 
@@ -133,22 +125,6 @@ export async function GET(request, context) {
     zoom = undefined;
     dpr = 1;
     forceDedupeRedirect = true;
-  }
-
-  // `_dpr` multiplies the output resolution without changing the framing: the
-  // viewport stays the same size in CSS pixels, so you get the same screenshot
-  // with more pixels (e.g. `opengraph` returns 2400x1260 instead of 1200x630 at
-  // `_dpr:2`). Useful for opengraph images, which social networks display on
-  // high density screens.
-  if("dpr" in pathOptions) {
-    // `hasOwn` so that inherited property names (`constructor`) aren’t a match
-    if(!Object.hasOwn(VALID_DPR, pathOptions.dpr)) {
-      console.log( "Invalid dpr", pathOptions.dpr );
-      delete pathOptions.dpr;
-      forceDedupeRedirect = true;
-    } else {
-      dpr = dpr * VALID_DPR[pathOptions.dpr];
-    }
   }
 
   if(!size || size === "small") {

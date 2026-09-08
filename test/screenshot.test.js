@@ -3,6 +3,7 @@
 import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import http from "node:http";
+import fs from "node:fs";
 
 // `screenshot.js` reads this at call time to use the `puppeteer` devDependency
 // instead of `@sparticuz/chromium`.
@@ -100,18 +101,11 @@ function getLuminanceQuantizationTable(buffer) {
   return table;
 }
 
-describe("_dpr multiplies the output resolution without changing the framing", () => {
+describe("output size", () => {
   // [path suffix, expected output size]
   let cases = [
     ["opengraph/", [1200, 630]],
-    ["opengraph/_dpr:1-5/", [1800, 945]],
-    ["opengraph/_dpr:2/", [2400, 1260]],
-    // `x.jpg` is allowed to follow the options segment
-    ["opengraph/_dpr:2/x.jpg", [2400, 1260]],
     ["small/", [375, 375]],
-    ["small/_dpr:2/", [750, 750]],
-    // `zoom` still holds opengraph output at 1200×630, `_dpr` still doubles it
-    ["opengraph/1:1/bigger/_dpr:2/", [2400, 1260]],
   ];
 
   for(let [suffix, expected] of cases) {
@@ -121,23 +115,12 @@ describe("_dpr multiplies the output resolution without changing the framing", (
   }
 });
 
-describe("invalid _dpr values de-dupe to a canonical URL", () => {
+describe("unknown underscore options de-dupe to a canonical URL", () => {
   let cases = [
-    // `1` is already the default, and only `1-5` and `2` are supported
-    ["opengraph/_dpr:1/", "opengraph/"],
-    ["opengraph/_dpr:3/", "opengraph/"],
-    ["opengraph/_dpr:2.5/", "opengraph/"],
-    ["opengraph/_dpr:0/", "opengraph/"],
-    ["opengraph/_dpr:abc/", "opengraph/"],
-    // the `.` spellings are not the supported ones
-    ["opengraph/_dpr:1.5/", "opengraph/"],
-    ["opengraph/_dpr:2.0/", "opengraph/"],
-    // an option with no value at all
-    ["opengraph/_dpr/", "opengraph/"],
-    // an inherited property name is not a valid ratio
-    ["opengraph/_dpr:constructor/", "opengraph/"],
-    // valid options alongside an invalid one are preserved
-    ["opengraph/_wait:2_dpr:9/", "opengraph/_wait:2/"],
+    ["opengraph/_dpr:2/", "opengraph/"],
+    ["opengraph/_nope:1/", "opengraph/"],
+    // valid options alongside an unknown one are preserved
+    ["opengraph/_wait:2_dpr:2/", "opengraph/_wait:2/"],
   ];
 
   for(let [suffix, expected] of cases) {
@@ -147,6 +130,22 @@ describe("invalid _dpr values de-dupe to a canonical URL", () => {
       assert.equal(response.headers.get("location"), pathTo(expected));
     });
   }
+});
+
+describe("vercel.json rewrites", () => {
+  // Vercel appends every matched rewrite placeholder as a query param, so a name
+  // that VALID_PARAMS does not know about makes the handler redirect every request.
+  test("every placeholder is an accepted query param", async () => {
+    let { rewrites } = JSON.parse(fs.readFileSync(new URL("../vercel.json", import.meta.url), "utf8"));
+    let names = [...new Set(rewrites.flatMap(rewrite => {
+      return [...rewrite.source.matchAll(/:([a-zA-Z]+)/g)].map(match => match[1]);
+    }))];
+    assert.ok(names.length > 0, "Could not find any rewrite placeholders");
+
+    let search = new URLSearchParams(names.map(name => [name, "x"]));
+    let response = await GET(new Request(`http://localhost${pathTo("opengraph/")}?${search}`));
+    assert.notEqual(response.status, 302, `Rewrite placeholders are not all in VALID_PARAMS: ${names.join(", ")}`);
+  });
 });
 
 describe("jpeg quality", () => {
