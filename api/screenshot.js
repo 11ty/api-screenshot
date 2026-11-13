@@ -1,5 +1,6 @@
 import screenshot from "../screenshot.js";
 import screenshotOptions from "../screenshot-options.js";
+import { isSSRFSafeURL } from "ssrfcheck";
 
 const ONE_MINUTE = 60;
 const ONE_HOUR = ONE_MINUTE*60;
@@ -12,14 +13,41 @@ const VALID_UNDERSCORE_OPTIONS = ["timeout", "wait"];
 // these names have to stay in sync with it.
 const VALID_PARAMS = ["url", "size", "aspectratio", "zoom", "options"];
 
+// The test suite serves its fixtures from 127.0.0.1, which the check below
+// rejects. Read lazily so tests can set it before the first request.
+function allowPrivateUrls() {
+  return process.env.SCREENSHOT_ALLOW_PRIVATE_URLS === "1";
+}
+
+// Rejects invalid urls, local paths, non-http(s) protocols, and literal
+// private/reserved addresses. `autoPrependProtocol` is off so a bare
+// `example.com` stays invalid, the way it was before.
 function isFullUrl(url) {
-  try {
-    new URL(url);
-    return true;
-  } catch(e) {
-    // invalid url OR local path
-    return false;
+  if(allowPrivateUrls()) {
+    return URL.canParse(url) && ["http:", "https:"].includes(new URL(url).protocol);
   }
+
+  return isSSRFSafeURL(url, { autoPrependProtocol: false });
+}
+
+const MAX_HEADER_LENGTH = 500;
+
+// Header values must be single-line ASCII or the Response constructor will throw,
+// which would turn a useful error message into a 500. Puppeteer’s “Could not find
+// Chrome” error is multiline, and upstream errors can carry curly quotes or emoji.
+function sanitizeHeaderValue(message) {
+  let value = `${message ?? ""}`.trim();
+  if(value.length > MAX_HEADER_LENGTH) {
+    value = `${value.slice(0, MAX_HEADER_LENGTH - 3)}...`;
+  }
+
+  // JSON escapes the control characters; the map escapes the rest, since a header
+  // value is a ByteString. Both are reversible with `JSON.parse`.
+  // `split` so each UTF-16 code unit is escaped on its own; spreading would iterate
+  // by code point and drop an astral character’s low surrogate.
+  return JSON.stringify(value).split("")
+    .map(char => char.charCodeAt(0) > 126 ? `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}` : char)
+    .join("");
 }
 
 function getBlankImageResponse(width, height, errorMessage) {
@@ -29,7 +57,7 @@ function getBlankImageResponse(width, height, errorMessage) {
     status: 200,
     headers: {
       "content-type": "image/svg+xml",
-      "x-11ty-error-message": errorMessage,
+      "x-11ty-error-message": sanitizeHeaderValue(errorMessage),
       // HOWEVER HOWEVER, we can set a ttl of 3600 which means that the image will be re-requested in an hour.
       "cache-control": `public, s-maxage=${ONE_DAY}, stale-while-revalidate=${ONE_HOUR}`
     }

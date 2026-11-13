@@ -24,11 +24,15 @@
   },
   "homepage": "https://github.com/11ty/api-screenshot#readme",
   "dependencies": {
-    "@sparticuz/chromium": "^149.0.0",
-    "puppeteer-core": "^25.9.0"
+    "@sparticuz/chromium": "^153.0.0",
+    "puppeteer-core": "^25.17.0",
+    "ssrfcheck": "^1.4.0"
   },
   "devDependencies": {
-    "puppeteer": "^25.9.0",
-    "vercel": "^59.9.1"
+    "puppeteer": "^25.17.0",
+    "vercel": "^65.15.0"
+  },
+  "allowScripts": {
+    "puppeteer@25.17.0": true
   }
 }

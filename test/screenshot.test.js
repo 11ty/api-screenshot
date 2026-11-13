@@ -9,6 +9,9 @@ import fs from "node:fs";
 // instead of `@sparticuz/chromium`.
 process.env.LOCAL_DEV = "true";
 
+// The fixture server listens on 127.0.0.1, which the SSRF check rejects.
+process.env.SCREENSHOT_ALLOW_PRIVATE_URLS = "1";
+
 const { GET } = await import("../api/screenshot.js");
 
 // A fixed-size page with no external requests, so renders are deterministic.
