@@ -63,6 +63,35 @@ Number of seconds to wait before the request times out. We will attempt to simul
 /:url/_timeout:9/
 ```
 
+#### Dark Mode
+
+Emulates `prefers-color-scheme: dark`. Pair it with the default (light) URL in a `<picture>`:
+
+```
+/:url/_dark/
+```
+
+```html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/:url/_dark/">
+  <img src="/:url/" alt="">
+</picture>
+```
+
+#### Disable JavaScript
+
+```
+/:url/_nojs/
+```
+
+#### Reduced Motion
+
+Emulates `prefers-reduced-motion: reduce`, useful when load-in animations are captured mid-way.
+
+```
+/:url/_nomotion/
+```
+
 #### Combine these options
 
 You can use any of these advanced options together, like `/:url/_wait:0_timeout:2/`. Order only matters to the uniqueness of the URL caching on the CDN: `/:url/_wait:0/` and `/:url/_wait:0/` will be functionally equivalent but make two different screenshot requests.

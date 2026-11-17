@@ -2,7 +2,7 @@ import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 
 async function screenshot(url, options = {}) {
-	let { format = "jpeg", viewport = [375, 375], dpr = 1, withJs = true, wait, timeout = 10000, referer } = options;
+	let { format = "jpeg", viewport = [375, 375], dpr = 1, withJs = true, wait, timeout = 10000, referer, dark = false, nomotion = false } = options;
 
   // Must be between 500 and 13000
   timeout = Math.min(Math.max(timeout, 500), 13000);
@@ -36,8 +36,13 @@ async function screenshot(url, options = {}) {
   let page = await browser.newPage();
 
   if(!withJs) {
-    page.setJavaScriptEnabled(false);
+    await page.setJavaScriptEnabled(false);
   }
+
+  await page.emulateMediaFeatures([
+    { name: "prefers-color-scheme", value: dark ? "dark" : "light" },
+    { name: "prefers-reduced-motion", value: nomotion ? "reduce" : "no-preference" },
+  ]);
 
   let response = await Promise.race([
     page.goto(url, {

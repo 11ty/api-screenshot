@@ -17,8 +17,11 @@ const { GET } = await import("../api/screenshot.js");
 // A fixed-size page with no external requests, so renders are deterministic.
 const TEST_PAGE = `<!doctype html><meta charset="utf-8"><title>Test</title>
 <style>html,body{margin:0}body{width:1200px;height:630px;background:#00b37e;
-color:#fff;font:700 72px/1.2 sans-serif;padding:64px;box-sizing:border-box}</style>
-<div>Screenshot API</div>`;
+color:#fff;font:700 72px/1.2 sans-serif;padding:64px;box-sizing:border-box}
+@media (prefers-color-scheme:dark){body{background:#111}}
+@media (prefers-reduced-motion:reduce){div{opacity:.5}}</style>
+<div>Screenshot API</div>
+<script>document.body.style.color="#000"</script>`;
 
 let server;
 let origin;
@@ -124,6 +127,10 @@ describe("unknown underscore options de-dupe to a canonical URL", () => {
     ["opengraph/_nope:1/", "opengraph/"],
     // valid options alongside an unknown one are preserved
     ["opengraph/_wait:2_dpr:2/", "opengraph/_wait:2/"],
+    // flags take no value
+    ["opengraph/_dark:1/", "opengraph/_dark/"],
+    ["opengraph/_nojs:1_wait:2/", "opengraph/_nojs_wait:2/"],
+    ["opengraph/_nomotion:0/", "opengraph/_nomotion/"],
   ];
 
   for(let [suffix, expected] of cases) {
@@ -148,6 +155,30 @@ describe("vercel.json rewrites", () => {
     let search = new URLSearchParams(names.map(name => [name, "x"]));
     let response = await GET(new Request(`http://localhost${pathTo("opengraph/")}?${search}`));
     assert.notEqual(response.status, 302, `Rewrite placeholders are not all in VALID_PARAMS: ${names.join(", ")}`);
+  });
+});
+
+describe("dark mode", () => {
+  test("/:url/opengraph/_dark/ renders the dark color scheme", async () => {
+    let light = await render("opengraph/");
+    let dark = await render("opengraph/_dark/");
+    assert.notDeepEqual(dark, light);
+  });
+});
+
+describe("no javascript", () => {
+  test("/:url/opengraph/_nojs/ skips page scripts", async () => {
+    let withJs = await render("opengraph/");
+    let noJs = await render("opengraph/_nojs/");
+    assert.notDeepEqual(noJs, withJs);
+  });
+});
+
+describe("reduced motion", () => {
+  test("/:url/opengraph/_nomotion/ emulates reduced motion", async () => {
+    let motion = await render("opengraph/");
+    let reduced = await render("opengraph/_nomotion/");
+    assert.notDeepEqual(reduced, motion);
   });
 });
 

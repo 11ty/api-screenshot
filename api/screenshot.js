@@ -10,6 +10,8 @@ const ONE_WEEK = ONE_DAY*7;
 const ONE_YEAR = ONE_DAY*365; // maximum s-maxage
 
 const VALID_UNDERSCORE_OPTIONS = ["timeout", "wait"];
+// Present or absent, with no `:value`.
+const VALID_UNDERSCORE_FLAGS = ["dark", "nojs", "nomotion"];
 // Vercel appends every rewrite placeholder in `vercel.json` as a query param, so
 // these names have to stay in sync with it.
 const VALID_PARAMS = ["url", "size", "aspectratio", "zoom", "options"];
@@ -66,7 +68,7 @@ function getBlankImageResponse(width, height, errorMessage) {
 }
 
 function getRedirectUrl(url, size, aspectratio, zoom, pathOptions = {}) {
-  let optionsStr = Object.entries(pathOptions).map(([key, value]) => `_${key}:${value}`).join("");
+  let optionsStr = Object.entries(pathOptions).map(([key, value]) => value === true ? `_${key}` : `_${key}:${value}`).join("");
   return "/" + [url, size, aspectratio, zoom, optionsStr].filter(Boolean).join("/") + "/";
 }
 
@@ -105,7 +107,12 @@ export async function GET(request, context) {
   let optionsMatch = (optionsString || "").split("_").filter(entry => !!entry);
   for(let o of optionsMatch) {
     let [key, value] = o.split(":");
-    if(!VALID_UNDERSCORE_OPTIONS.includes(key)) {
+    if(VALID_UNDERSCORE_FLAGS.includes(key)) {
+      if(value !== undefined) {
+        forceDedupeRedirect = true;
+      }
+      pathOptions[key] = true;
+    } else if(!VALID_UNDERSCORE_OPTIONS.includes(key)) {
       // don’t add to pathOptions
       console.log( "Invalid underscore option key", key, value );
       forceDedupeRedirect = true;
@@ -246,7 +253,7 @@ export async function GET(request, context) {
 
     let startTime = Date.now();
     let format = "jpeg"; // hardcoded for now, but png and webp are supported!
-    let withJs = true;
+    let withJs = !pathOptions.nojs;
     let screenshotUrl = url;
     if(isYouTubeVideoUrl(url)) {
       screenshotUrl = getYouTubeEmbedUrl(url);
@@ -259,6 +266,8 @@ export async function GET(request, context) {
       wait,
       timeout,
       withJs,
+      dark: !!pathOptions.dark,
+      nomotion: !!pathOptions.nomotion,
       // Identifies the service in site analytics (#5), and YouTube’s player requires one (Error 153).
       referer: `${requestUrl.origin}/`,
     });
