@@ -2,7 +2,7 @@ import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 
 async function screenshot(url, options = {}) {
-	let { format = "jpeg", viewport = [375, 375], dpr = 1, withJs = true, wait, timeout = 10000 } = options;
+	let { format = "jpeg", viewport = [375, 375], dpr = 1, withJs = true, wait, timeout = 10000, referer } = options;
 
   // Must be between 500 and 13000
   timeout = Math.min(Math.max(timeout, 500), 13000);
@@ -43,6 +43,7 @@ async function screenshot(url, options = {}) {
     page.goto(url, {
       waitUntil: wait || ["load"],
       timeout,
+      referer,
     }),
     new Promise(resolve => {
       setTimeout(() => {

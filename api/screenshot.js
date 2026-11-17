@@ -248,8 +248,11 @@ export async function GET(request, context) {
     let format = "jpeg"; // hardcoded for now, but png and webp are supported!
     let withJs = true;
     let screenshotUrl = url;
+    let referer;
     if(isYouTubeVideoUrl(url)) {
       screenshotUrl = getYouTubeEmbedUrl(url);
+      // YouTube’s player shows Error 153 without a referer.
+      referer = `${requestUrl.origin}/`;
     }
 
     let output = await screenshot(screenshotUrl, {
@@ -259,6 +262,7 @@ export async function GET(request, context) {
       wait,
       timeout,
       withJs,
+      referer,
     });
 
     // output to Function logs
