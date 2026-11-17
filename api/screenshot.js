@@ -1,5 +1,6 @@
 import screenshot from "../screenshot.js";
 import screenshotOptions from "../screenshot-options.js";
+import { isYouTubeVideoUrl, getYouTubeEmbedUrl } from "../youtube.js";
 import { isSSRFSafeURL } from "ssrfcheck";
 
 const ONE_MINUTE = 60;
@@ -246,7 +247,12 @@ export async function GET(request, context) {
     let startTime = Date.now();
     let format = "jpeg"; // hardcoded for now, but png and webp are supported!
     let withJs = true;
-    let output = await screenshot(url, {
+    let screenshotUrl = url;
+    if(isYouTubeVideoUrl(url)) {
+      screenshotUrl = getYouTubeEmbedUrl(url);
+    }
+
+    let output = await screenshot(screenshotUrl, {
       format,
       viewport,
       dpr,
