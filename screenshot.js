@@ -64,13 +64,17 @@ async function screenshot(url, options = {}) {
     encoding: "binary",
     fullPage: false,
     captureBeyondViewport: false,
-    clip: {
+  };
+
+  // A document-relative clip would miss the viewport after scrolling to an #anchor (#4).
+  if(!URL.parse(url)?.hash) {
+    screenshotOptions.clip = {
       x: 0,
       y: 0,
       width: viewport[0],
       height: viewport[1],
-    }
-  };
+    };
+  }
 
   if(format === "jpeg") {
     screenshotOptions.quality = 90;
